@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class RecommendationResource {
 
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
+    private static final String RESPONSE_STRING_FORMAT = "recommendation %s from '%s': %d\n";
 
     private static final String RESPONSE_STRING_NOW_FORMAT = "recommendation v3 %s from '%s': %d\n";
 
@@ -34,6 +34,12 @@ public class RecommendationResource {
 
     private static final String HOSTNAME = parseContainerIdFromHostname(
             System.getenv().getOrDefault("HOSTNAME", "unknown"));
+    private static final String VERSION = parseVersionFromHostname(
+            System.getenv().getOrDefault("HOSTNAME", "unknown"));
+
+    static String parseVersionFromHostname(String hostname) {
+        return hostname.replaceAll("recommendation-", "").replaceAll("-.*", "");
+    }
 
     static String parseContainerIdFromHostname(String hostname) {
         return hostname.replaceAll("recommendation-v\\d+-", "");
@@ -50,7 +56,7 @@ public class RecommendationResource {
         if (misbehave) {
             return doMisbehavior();
         }
-        return Response.ok(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count)).build();
+        return Response.ok(String.format(RESPONSE_STRING_FORMAT, VERSION, HOSTNAME, count)).build();
         // return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
     }
 
